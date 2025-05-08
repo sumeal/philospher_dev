@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
+/*   By: muzz <muzz@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:06:46 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/08 17:02:43 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/05/08 20:16:36 by muzz             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,30 +78,33 @@ int	ret_error(int ret, char *s)
 	return (ret);
 }
 
-void	put_value_to_struct(t_table *table, long **num)
+int	put_value_to_struct(t_table *table, long *num)
 {
-	table->num_philo = *num[0];
-	table->time_to_die = *num[1];
-	table->time_eat = *num[2];
-	table->time_sleep = *num[3];
-	if (*num[4])
-		table->num_need_eat = *num[4];
+	table->num_philo = num[0];
+	table->time_to_die = num[1];
+	table->time_eat = num[2];
+	table->time_sleep = num[3];
+	if (table->num_need_eat >= 0)
+		table->num_need_eat = num[4];
+	if (table->num_philo > 200)
+		return (ret_error(-1, "Error: exceed maximum 200 philos"));
+	return (0);
 }
 
-int	parsing_input(char **argv, t_table *table)
+int	parsing_input(int argc, char **argv, t_table *table)
 {
 	int		i;
-	long	**num;
+	long	num[5];
 
 	i = 0;
-	while (argv[++i])
+	while (++i < argc)
 	{
 		if (is_numeric(argv[i]) < 0)
 			return (ret_error(-1, "Error: need numeric input"));
-		*num[i - 1] = ft_atol(argv[i]);
+		num[i - 1] = ft_atol(argv[i]);
 	}
-	num[i] = NULL;
-	put_value_to_struct(table, num);
+	if (put_value_to_struct(table, num) < 0)
+		return (-1);
 	return (0);
 }
 
@@ -123,7 +126,7 @@ int	main(int argc, char **argv)
 	if (argc == 5 || argc == 6)
 	{
 		init_struct(&table, argc);
-		if (parsing_input(argv, &table) < 0)
+		if (parsing_input(argc, argv, &table) < 0)
 			return (1);
 		print_table(&table);
 	}
