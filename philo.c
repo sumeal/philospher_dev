@@ -6,13 +6,13 @@
 /*   By: muzz <muzz@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:06:46 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/08 20:16:36 by muzz             ###   ########.fr       */
+/*   Updated: 2025/05/12 10:40:27 by muzz             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	init_struct(t_table *table, int argc)
+void	init_table(t_table *table, int argc)
 {
 	table->num_philo = 0;
 	table->time_to_die = 0;
@@ -78,7 +78,7 @@ int	ret_error(int ret, char *s)
 	return (ret);
 }
 
-int	put_value_to_struct(t_table *table, long *num)
+int	put_value_to_table(t_table *table, long *num)
 {
 	table->num_philo = num[0];
 	table->time_to_die = num[1];
@@ -103,7 +103,7 @@ int	parsing_input(int argc, char **argv, t_table *table)
 			return (ret_error(-1, "Error: need numeric input"));
 		num[i - 1] = ft_atol(argv[i]);
 	}
-	if (put_value_to_struct(table, num) < 0)
+	if (put_value_to_table(table, num) < 0)
 		return (-1);
 	return (0);
 }
@@ -119,20 +119,59 @@ void	print_table(t_table *table)
 	printf("===========================\n");
 }
 
+int	init_fork(t_table *table)
+{
+	int	i;
+
+	table->forks = malloc(sizeof(pthread_mutex_t) * table->num_philo);
+	if (!table->forks)
+		return (-1);
+	i = -1;
+	while (++i < table->num_philo)
+	{
+		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
+		{
+			printf("Error: failed init fork %d\n". i);
+			return (-1);
+		}
+	}
+	return (0);
+}
+
+void	init_philo(t_table *table)
+{
+	int	i;
+
+
+	table->philo = malloc(sizeof(t_philo) * table->num_philo);
+	if (!table->philo)
+		return (NULL);
+	i = -1;
+	while (++i < table->num_philo)
+	{
+		table->philo[i].id = i + 1;
+		table->philo[i].l_fork = &table->forks[i];
+		table->philo[i].r_fork = &table->forks[(i + 1) % table->num_philo];
+	}
+}
+
 int	main(int argc, char **argv)
 {
 	t_table	table;
 
 	if (argc == 5 || argc == 6)
 	{
-		init_struct(&table, argc);
+		init_table(&table, argc);
 		if (parsing_input(argc, argv, &table) < 0)
 			return (1);
+		if (init_fork(&table) < 0)
+			return (1);
+		init_philo(&table);
 		print_table(&table);
 	}
 	else
 	{
-		printf("Wrong format\n");
+		printf("Error: Wrong format\n");
 	}
 	return (0);
 }
