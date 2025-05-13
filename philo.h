@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: muzz <muzz@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:07:06 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/12 10:38:40 by muzz             ###   ########.fr       */
+/*   Updated: 2025/05/13 11:37:27 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,11 @@
 
 # include <unistd.h>
 # include <stdio.h>
+# include <stdlib.h>
 # include <sys/time.h>
 # include <pthread.h>
+
+typedef struct s_philo t_philo;
 
 typedef struct s_table
 {
@@ -26,24 +29,27 @@ typedef struct s_table
 	long			time_sleep;
 	long			num_need_eat;
 	pthread_mutex_t	mutex_write;
-	pthread_mutex_t mutex_meal;
-	pthread_mutex_t mutex_dead;
-	pthread_mutex_t	forks;
-	t_philo	*philo;
+	pthread_mutex_t	mutex_meal;
+	pthread_mutex_t	mutex_dead;
+	pthread_mutex_t	*forks;
+	int				dead;
+	long			time_start;
+	t_philo			*philo;
 }	t_table;
 
 typedef struct s_philo
 {
-	int			id;
-	pthread_t	thread;
-	long		last_meal_time;
-	long		meals_eaten;
-	pthread_mutex_t	*l_fork;
-	pthread_mutex_t	*r_fork;
+	int				id;
+	pthread_t		thread;
+	long			last_meal_time;
+	long			meals_eaten;
+	pthread_mutex_t	**l_fork;
+	pthread_mutex_t	**r_fork;
 	pthread_mutex_t	*mutex_write;
 	pthread_mutex_t	*mutex_meal;
+	int				*dead;
 	pthread_mutex_t	*mutex_dead;
-	t_table		*table;
+	t_table			*table;
 }	t_philo;
 
 #endif
