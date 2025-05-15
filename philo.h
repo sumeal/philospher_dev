@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:07:06 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/13 11:37:27 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/05/15 10:41:24 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ typedef struct s_philo
 	pthread_t		thread;
 	long			last_meal_time;
 	long			meals_eaten;
-	pthread_mutex_t	**l_fork;
-	pthread_mutex_t	**r_fork;
+	pthread_mutex_t	*l_fork;
+	pthread_mutex_t	*r_fork;
 	pthread_mutex_t	*mutex_write;
 	pthread_mutex_t	*mutex_meal;
 	int				*dead;

@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:06:46 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/13 12:38:55 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/05/15 16:25:16 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int	ft_isdigit(int c)
 
 int	is_numeric(char *s)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (s[0] == '+')
@@ -62,7 +62,6 @@ int	is_numeric(char *s)
 		i++;
 	}
 	return (0);
-	
 }
 
 long	ft_atol(const char *nptr)
@@ -105,6 +104,7 @@ int	put_value_to_table(t_table *table, long *num)
 		table->num_need_eat = num[4];
 	if (table->num_philo > 200)
 		return (ret_error(-1, "Error: exceed maximum 200 philos"));
+	table->dead = 0;
 	return (0);
 }
 
@@ -179,6 +179,7 @@ void	init_philo(t_table *table)
 		table->philo[i].mutex_meal = &table->mutex_meal;
 		table->philo[i].dead = &table->dead;
 		table->philo[i].mutex_dead = &table->mutex_dead;
+		table->philo[i].table = table;
 	}
 }
 
@@ -186,15 +187,28 @@ void	print_status(t_philo *philo, char *s)
 {
 	long	now;
 
-	pthread_mutex_lock(&philo->mutex_write);
+	// pthread_mutex_lock(philo->mutex_dead);
+    // if (*(philo->dead))
+    // {
+    //     pthread_mutex_unlock(philo->mutex_dead);
+    //     return ;
+    // }
+    // pthread_mutex_unlock(philo->mutex_dead);
+	pthread_mutex_lock(philo->mutex_write);
 	now = get_time_in_ms() - philo->table->time_start;
-	printf("%l Philospher %d %s", now, philo->id, s);
-	pthread_mutex_unlocklock(&philo->mutex_write);
+	if (!(*philo->dead))
+		printf("%ld Philospher %d %s\n", now, philo->id, s);
+	pthread_mutex_unlock(philo->mutex_write);
 }
 
-void	no_one_is_dead(t_philo *philo)
+int check_dead(t_philo *philo)
 {
-	
+	int status;
+
+	pthread_mutex_lock(philo->mutex_dead);
+	status = *(philo->dead);
+	pthread_mutex_unlock(philo->mutex_dead);
+	return status;
 }
 
 void	*routine(void *arg)
@@ -204,7 +218,7 @@ void	*routine(void *arg)
 	philo = (t_philo *)arg;
 	if (philo->id % 2 == 0)
 		usleep(1000);
-	while (!no_one_is_dead(philo))
+	while (!check_dead(philo))
 	{
 		print_status(philo, "is thinking");
 		pthread_mutex_lock(philo->l_fork);
@@ -215,11 +229,13 @@ void	*routine(void *arg)
 		philo->last_meal_time = get_time_in_ms();
 		print_status(philo, "is eating");
 		pthread_mutex_unlock(philo->mutex_meal);
+		ft_usleep(philo->table->time_eat, philo);
 		pthread_mutex_unlock(philo->l_fork);
 		pthread_mutex_unlock(philo->r_fork);
 		print_status(philo, "is sleeping");
-		ft_usleep(philo->table->time_sleep * 1000, philo);
+		ft_usleep(philo->table->time_sleep, philo);
 	}
+	return (NULL);
 }
 
 void	init_thread(t_philo *philo)
@@ -230,8 +246,63 @@ void	init_thread(t_philo *philo)
 	i = -1;
 	while (++i < philo->table->num_philo)
 	{
+		philo[i].last_meal_time = get_time_in_ms();
 		if (pthread_create(&philo[i].thread, NULL, routine, &philo[i]) != 0)
 			return ;
+	}
+}
+
+void	*monitor_routine(void *arg)
+{
+	t_table	*table;
+	int		i;
+
+	table = (t_table *)arg;
+	while (1)
+	{
+		i = 0;
+		while (i < table->num_philo)
+		{
+			pthread_mutex_lock(table->philo[i].mutex_meal);
+			if ((get_time_in_ms() - table->philo[i].last_meal_time) > table->time_to_die)
+			{
+				pthread_mutex_lock(&table->mutex_dead);
+				table->dead = 1;
+				pthread_mutex_unlock(&table->mutex_dead);
+				pthread_mutex_lock(&table->mutex_write);
+				printf("%ld Philospher %d died\n", get_time_in_ms() - table->time_start, table->philo[i].id);
+				pthread_mutex_unlock(&table->mutex_write);
+				pthread_mutex_unlock(table->philo[i].mutex_meal);
+				return (NULL);
+			}
+			pthread_mutex_unlock(table->philo[i].mutex_meal);
+			i++;
+		}
+		usleep(200);
+	}
+	return (NULL);
+}
+
+void	init_monitor_thread(t_table *table)
+{
+	pthread_t	monitor;
+
+	if (pthread_create(&monitor, NULL, monitor_routine, table) != 0)
+	{
+		printf("Error: Failed to create thread\n");
+		return ;
+	}
+	pthread_join(monitor, NULL);
+}
+
+void	waiting_for_all(t_table *table)
+{
+	int	i;
+
+	i = -1;
+	while (++i < table->num_philo)
+	{
+		pthread_join(table->philo[i].thread, NULL);
 	}
 }
 
@@ -241,14 +312,25 @@ int	main(int argc, char **argv)
 
 	if (argc == 5 || argc == 6)
 	{
+		printf("1\n");
 		init_table(&table, argc);
+		printf("2\n");
 		if (parsing_input(argc, argv, &table) < 0)
 			return (1);
+		printf("3\n");
 		if (init_mutex(&table) < 0)
 			return (1);
+		printf("4\n");
 		init_philo(&table);
+		printf("5\n");
 		//print_table(&table);
-		init_thread(&table.philo);
+		init_thread(table.philo);
+		printf("6\n");
+		init_monitor_thread(&table);
+		printf("7\n");
+		waiting_for_all(&table);
+		printf("8\n");
+
 	}
 	else
 	{
