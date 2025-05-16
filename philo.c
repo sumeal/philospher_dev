@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:06:46 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/15 16:25:16 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/05/16 11:47:45 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,7 +208,7 @@ int check_dead(t_philo *philo)
 	pthread_mutex_lock(philo->mutex_dead);
 	status = *(philo->dead);
 	pthread_mutex_unlock(philo->mutex_dead);
-	return status;
+	return (status);
 }
 
 void	*routine(void *arg)
@@ -221,8 +221,15 @@ void	*routine(void *arg)
 	while (!check_dead(philo))
 	{
 		print_status(philo, "is thinking");
+		if (check_dead(philo))
+			break ;
 		pthread_mutex_lock(philo->l_fork);
 		print_status(philo, "has taken left fork");
+		if (check_dead(philo))
+		{
+			pthread_mutex_unlock(philo->l_fork);
+			break ;
+		}
 		pthread_mutex_lock(philo->r_fork);
 		print_status(philo, "has taken right fork");
 		pthread_mutex_lock(philo->mutex_meal);
@@ -249,6 +256,7 @@ void	init_thread(t_philo *philo)
 		philo[i].last_meal_time = get_time_in_ms();
 		if (pthread_create(&philo[i].thread, NULL, routine, &philo[i]) != 0)
 			return ;
+		pthread_detach(philo[i].thread);
 	}
 }
 
@@ -295,17 +303,6 @@ void	init_monitor_thread(t_table *table)
 	pthread_join(monitor, NULL);
 }
 
-void	waiting_for_all(t_table *table)
-{
-	int	i;
-
-	i = -1;
-	while (++i < table->num_philo)
-	{
-		pthread_join(table->philo[i].thread, NULL);
-	}
-}
-
 int	main(int argc, char **argv)
 {
 	t_table	table;
@@ -328,9 +325,6 @@ int	main(int argc, char **argv)
 		printf("6\n");
 		init_monitor_thread(&table);
 		printf("7\n");
-		waiting_for_all(&table);
-		printf("8\n");
-
 	}
 	else
 	{
