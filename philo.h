@@ -6,7 +6,7 @@
 /*   By: muzz <muzz@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:07:06 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/19 15:45:40 by muzz             ###   ########.fr       */
+/*   Updated: 2025/05/19 21:21:32 by muzz             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <sys/time.h>
 # include <pthread.h>
 
-typedef struct s_philo t_philo;
+typedef struct s_philo	t_philo;
 
 typedef struct s_table
 {
@@ -91,7 +91,5 @@ long	get_time_in_ms(void);
 void	ft_usleep(long time_sleep, t_philo *philo);
 int		ret_error(int ret, char *s);
 void	print_status(t_philo *philo, char *s);
-
-
 
 #endif

@@ -12,12 +12,12 @@ FILES = main.c \
 		routine.c \
 		utils.c
 
-OFILES = $(FILES: .c=.o)
+OFILES = $(FILES:.c=.o)
 
 $(NAME) : $(OFILES)
 	$(CC) $(CFLAGS) $(OFILES) -o $(NAME)
 
-%.0: %.c
+%.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
 all : $(NAME)
@@ -25,7 +25,7 @@ all : $(NAME)
 clean:
 	rm -f $(OFILES)
 
-fclean:
+fclean: clean
 	rm -f $(NAME)
 
 re: fclean all

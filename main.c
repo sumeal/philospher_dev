@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.c                                            :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: muzz <muzz@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:06:46 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/19 15:30:32 by muzz             ###   ########.fr       */
+/*   Updated: 2025/05/19 21:26:57 by muzz             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,9 @@ void	print_status(t_philo *philo, char *s)
 	pthread_mutex_lock(philo->mutex_write);
 	now = get_time_in_ms() - philo->table->time_start;
 	if (!(*philo->dead))
-		printf("%ld Philospher %d %s\n", now, philo->id, s);
+		printf("%ld %d %s\n", now, philo->id, s);
 	pthread_mutex_unlock(philo->mutex_write);
 	pthread_mutex_unlock(philo->mutex_dead);
-
 }
 
 int	main(int argc, char **argv)
@@ -55,22 +54,15 @@ int	main(int argc, char **argv)
 
 	if (argc == 5 || argc == 6)
 	{
-		printf("1\n");
 		init_table(&table, argc);
-		printf("2\n");
 		if (parsing_input(argc, argv, &table) < 0)
 			return (1);
-		printf("3\n");
 		if (init_mutex(&table) < 0)
 			return (1);
-		printf("4\n");
 		init_philo(&table);
-		printf("5\n");
 		init_thread(table.philo);
-		printf("6\n");
 		init_monitor_thread(&table);
 		wait_thread(table.philo);
-		printf("7\n");
 	}
 	else
 	{

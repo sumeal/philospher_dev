@@ -6,7 +6,7 @@
 /*   By: muzz <muzz@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 15:29:10 by muzz              #+#    #+#             */
-/*   Updated: 2025/05/19 15:46:13 by muzz             ###   ########.fr       */
+/*   Updated: 2025/05/19 21:26:23 by muzz             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	is_dead(t_philo *philo)
 {
-	int status;
+	int	status;
 
 	pthread_mutex_lock(philo->mutex_dead);
 	status = *(philo->dead);
@@ -34,13 +34,15 @@ void	*special_case(t_philo *philo)
 int	check_dead(t_table *table, int i)
 {
 	pthread_mutex_lock(table->philo[i].mutex_meal);
-	if ((get_time_in_ms() - table->philo[i].last_meal_time) > table->time_to_die)
+	if ((get_time_in_ms() - table->philo[i].last_meal_time)
+		> table->time_to_die)
 	{
 		pthread_mutex_lock(&table->mutex_dead);
 		table->dead = 1;
 		pthread_mutex_unlock(&table->mutex_dead);
 		pthread_mutex_lock(&table->mutex_write);
-		printf("%ld Philospher %d died\n", get_time_in_ms() - table->time_start, table->philo[i].id);
+		printf("%ld ", get_time_in_ms() - table->time_start);
+		printf("%d died\n", table->philo[i].id);
 		pthread_mutex_unlock(&table->mutex_write);
 		pthread_mutex_unlock(table->philo[i].mutex_meal);
 		return (-1);
@@ -70,7 +72,8 @@ void	all_philo_is_full(t_table *table)
 {
 	pthread_mutex_lock(&table->mutex_dead);
 	pthread_mutex_lock(&table->mutex_write);
-	printf("All philosopers have eaten atleast %ld times\n", table->num_need_eat);
+	printf("All philosopers have eaten atleast ");
+	printf("%ld times\n", table->num_need_eat);
 	table->dead = 1;
 	pthread_mutex_unlock(&table->mutex_write);
 	pthread_mutex_unlock(&table->mutex_dead);

@@ -6,7 +6,7 @@
 /*   By: muzz <muzz@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 15:25:35 by muzz              #+#    #+#             */
-/*   Updated: 2025/05/19 15:26:07 by muzz             ###   ########.fr       */
+/*   Updated: 2025/05/19 21:21:05 by muzz             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,12 @@ void	take_fork(t_philo *philo, char *s)
 	if (ft_strcmp(s, "left"))
 	{
 		pthread_mutex_lock(philo->l_fork);
-		print_status(philo, "has taken left fork");	
+		print_status(philo, "has taken a fork");
 	}
 	else
 	{
 		pthread_mutex_lock(philo->r_fork);
-		print_status(philo, "has taken right fork");
+		print_status(philo, "has taken a fork");
 	}
 }
 
