@@ -1,0 +1,43 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   activities.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: muzz <muzz@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/19 15:25:35 by muzz              #+#    #+#             */
+/*   Updated: 2025/05/19 15:26:07 by muzz             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "philo.h"
+
+void	take_fork(t_philo *philo, char *s)
+{
+	if (ft_strcmp(s, "left"))
+	{
+		pthread_mutex_lock(philo->l_fork);
+		print_status(philo, "has taken left fork");	
+	}
+	else
+	{
+		pthread_mutex_lock(philo->r_fork);
+		print_status(philo, "has taken right fork");
+	}
+}
+
+void	eating(t_philo *philo)
+{
+	pthread_mutex_lock(philo->mutex_meal);
+	philo->meals_eaten++;
+	philo->last_meal_time = get_time_in_ms();
+	print_status(philo, "is eating");
+	pthread_mutex_unlock(philo->mutex_meal);
+	ft_usleep(philo->table->time_eat, philo);
+}
+
+void	sleeping(t_philo *philo)
+{
+	print_status(philo, "is sleeping");
+	ft_usleep(philo->table->time_sleep, philo);
+}

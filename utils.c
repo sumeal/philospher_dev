@@ -1,0 +1,77 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: muzz <muzz@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/19 15:29:10 by muzz              #+#    #+#             */
+/*   Updated: 2025/05/19 15:46:13 by muzz             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "philo.h"
+
+int	is_dead(t_philo *philo)
+{
+	int status;
+
+	pthread_mutex_lock(philo->mutex_dead);
+	status = *(philo->dead);
+	pthread_mutex_unlock(philo->mutex_dead);
+	return (status);
+}
+
+void	*special_case(t_philo *philo)
+{
+	take_fork(philo, "left");
+	ft_usleep(philo->table->time_to_die * 1000, philo);
+	print_status(philo, "died");
+	pthread_mutex_unlock(philo->l_fork);
+	return (NULL);
+}
+
+int	check_dead(t_table *table, int i)
+{
+	pthread_mutex_lock(table->philo[i].mutex_meal);
+	if ((get_time_in_ms() - table->philo[i].last_meal_time) > table->time_to_die)
+	{
+		pthread_mutex_lock(&table->mutex_dead);
+		table->dead = 1;
+		pthread_mutex_unlock(&table->mutex_dead);
+		pthread_mutex_lock(&table->mutex_write);
+		printf("%ld Philospher %d died\n", get_time_in_ms() - table->time_start, table->philo[i].id);
+		pthread_mutex_unlock(&table->mutex_write);
+		pthread_mutex_unlock(table->philo[i].mutex_meal);
+		return (-1);
+	}
+	pthread_mutex_unlock(table->philo[i].mutex_meal);
+	return (1);
+}
+
+int	check_all_finished(t_table *table)
+{
+	int	finished_count;
+	int	i;
+
+	finished_count = 0;
+	i = -1;
+	while (++i < table->num_philo)
+	{
+		pthread_mutex_lock(table->philo[i].mutex_meal);
+		if (table->philo[i].meals_eaten >= table->num_need_eat)
+			finished_count++;
+		pthread_mutex_unlock(table->philo[i].mutex_meal);
+	}
+	return (finished_count);
+}
+
+void	all_philo_is_full(t_table *table)
+{
+	pthread_mutex_lock(&table->mutex_dead);
+	pthread_mutex_lock(&table->mutex_write);
+	printf("All philosopers have eaten atleast %ld times\n", table->num_need_eat);
+	table->dead = 1;
+	pthread_mutex_unlock(&table->mutex_write);
+	pthread_mutex_unlock(&table->mutex_dead);
+}
