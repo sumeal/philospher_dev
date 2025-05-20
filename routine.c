@@ -3,14 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   routine.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: muzz <muzz@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 15:18:45 by muzz              #+#    #+#             */
-/*   Updated: 2025/05/19 15:24:34 by muzz             ###   ########.fr       */
+/*   Updated: 2025/05/20 12:28:13 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+int	take_fork_right_first(t_philo *philo)
+{
+	take_fork(philo, "right");
+	if (is_dead(philo))
+	{
+		pthread_mutex_unlock(philo->l_fork);
+		return (-1);
+	}
+	take_fork(philo, "left");
+	return (0);
+}
+
+int	take_fork_left_first(t_philo *philo)
+{
+	take_fork(philo, "left");
+	if (is_dead(philo))
+	{
+		pthread_mutex_unlock(philo->l_fork);
+		return (-1);
+	}
+	take_fork(philo, "right");
+	return (0);
+}
 
 void	*routine(void *arg)
 {
@@ -19,23 +43,23 @@ void	*routine(void *arg)
 	philo = (t_philo *)arg;
 	if (philo->table->num_philo == 1)
 		return (special_case(philo));
-	if (philo->id % 2 == 0)
-		usleep(1000);
 	while (!is_dead(philo))
 	{
 		print_status(philo, "is thinking");
 		if (is_dead(philo))
 			break ;
-		take_fork(philo, "left");
-		if (is_dead(philo))
+		if (philo->id % 2 == 0)
 		{
-			pthread_mutex_unlock(philo->l_fork);
-			break ;
+			if (take_fork_left_first(philo) < 0)
+				break ;
 		}
-		take_fork(philo, "right");
+		else
+		{
+			if (take_fork_right_first(philo) < 0)
+				break ;
+		}
 		eating(philo);
-		pthread_mutex_unlock(philo->l_fork);
-		pthread_mutex_unlock(philo->r_fork);
+		unlock_both_forks(philo);
 		sleeping(philo);
 	}
 	return (NULL);
@@ -61,7 +85,7 @@ void	*monitor_routine(void *arg)
 				return (NULL);
 			}
 		}
-		usleep(200);
+		usleep(100);
 	}
 	return (NULL);
 }

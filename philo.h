@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: muzz <muzz@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:07:06 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/19 21:21:32 by muzz             ###   ########.fr       */
+/*   Updated: 2025/05/20 12:29:31 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ void	init_thread(t_philo *philo);
 void	init_monitor_thread(t_table *table);
 
 /*routine.c*/
+int		take_fork_right_first(t_philo *philo);
+int		take_fork_left_first(t_philo *philo);
 void	*routine(void *arg);
 void	*monitor_routine(void *arg);
 void	wait_thread(t_philo *philo);
@@ -78,6 +80,8 @@ int		put_value_to_table(t_table *table, long *num);
 void	take_fork(t_philo *philo, char *s);
 void	eating(t_philo *philo);
 void	sleeping(t_philo *philo);
+void	unlock_both_forks(t_philo *philo);
+void	free_thread(t_table *table);
 
 /*utils.c*/
 int		is_dead(t_philo *philo);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: muzz <muzz@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:06:46 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/19 21:26:57 by muzz             ###   ########.fr       */
+/*   Updated: 2025/05/20 12:29:13 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,12 @@ void	ft_usleep(long time_sleep, t_philo *philo)
 	long	start;
 
 	start = get_time_in_ms();
-	while (((get_time_in_ms() - start) < time_sleep) && philo->table->dead != 1)
+	while (((get_time_in_ms() - start) < time_sleep))
+	{
+		if (is_dead(philo))
+			break ;
 		usleep(200);
+	}
 }
 
 int	ret_error(int ret, char *s)
@@ -63,6 +67,7 @@ int	main(int argc, char **argv)
 		init_thread(table.philo);
 		init_monitor_thread(&table);
 		wait_thread(table.philo);
+		free_thread(&table);
 	}
 	else
 	{

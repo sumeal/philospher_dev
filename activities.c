@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   activities.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: muzz <muzz@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 15:25:35 by muzz              #+#    #+#             */
-/*   Updated: 2025/05/19 21:21:05 by muzz             ###   ########.fr       */
+/*   Updated: 2025/05/20 12:29:22 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,16 @@ void	sleeping(t_philo *philo)
 {
 	print_status(philo, "is sleeping");
 	ft_usleep(philo->table->time_sleep, philo);
+}
+
+void	unlock_both_forks(t_philo *philo)
+{
+	pthread_mutex_unlock(philo->l_fork);
+	pthread_mutex_unlock(philo->r_fork);
+}
+
+void	free_thread(t_table *table)
+{
+	free(table->philo);
+	free(table->forks);
 }
