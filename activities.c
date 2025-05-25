@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/19 15:25:35 by muzz              #+#    #+#             */
-/*   Updated: 2025/05/20 12:29:22 by abin-moh         ###   ########.fr       */
+/*   Created: 2025/05/19 15:25:35 by abin-moh          #+#    #+#             */
+/*   Updated: 2025/05/25 13:58:22 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,11 @@ void	take_fork(t_philo *philo, char *s)
 
 void	eating(t_philo *philo)
 {
-	pthread_mutex_lock(philo->mutex_meal);
+	pthread_mutex_lock(&philo->mutex_meal);
 	philo->meals_eaten++;
 	philo->last_meal_time = get_time_in_ms();
 	print_status(philo, "is eating");
-	pthread_mutex_unlock(philo->mutex_meal);
+	pthread_mutex_unlock(&philo->mutex_meal);
 	ft_usleep(philo->table->time_eat, philo);
 }
 
@@ -50,6 +50,25 @@ void	unlock_both_forks(t_philo *philo)
 
 void	free_thread(t_table *table)
 {
-	free(table->philo);
-	free(table->forks);
+	int	i;
+
+	if (table->philo)
+	{
+		i = -1;
+		while (++i < table->num_philo)
+			if (table->philo[i].mutex_meal_init)
+				pthread_mutex_destroy(&table->philo[i].mutex_meal);
+		free(table->philo);
+	}
+	if (table->forks)
+	{
+		i = -1;
+		while (++i < table->num_philo)
+			pthread_mutex_destroy(&table->forks[i]);
+		free(table->forks);
+	}
+	if (table->mutex_write_init)
+		pthread_mutex_destroy(&table->mutex_write);
+	if (table->mutex_dead_init)
+		pthread_mutex_destroy(&table->mutex_dead);
 }

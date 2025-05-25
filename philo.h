@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:07:06 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/20 12:29:31 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/05/25 13:58:02 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,9 @@ typedef struct s_table
 	long			time_sleep;
 	long			num_need_eat;
 	pthread_mutex_t	mutex_write;
-	pthread_mutex_t	mutex_meal;
+	int				mutex_write_init;
 	pthread_mutex_t	mutex_dead;
+	int				mutex_dead_init;
 	pthread_mutex_t	*forks;
 	int				dead;
 	long			time_start;
@@ -43,10 +44,11 @@ typedef struct s_philo
 	pthread_t		thread;
 	long			last_meal_time;
 	long			meals_eaten;
+	pthread_mutex_t mutex_meal;
+	int				mutex_meal_init;
 	pthread_mutex_t	*l_fork;
 	pthread_mutex_t	*r_fork;
 	pthread_mutex_t	*mutex_write;
-	pthread_mutex_t	*mutex_meal;
 	int				*dead;
 	pthread_mutex_t	*mutex_dead;
 	t_table			*table;
@@ -60,10 +62,10 @@ int		ft_strcmp(char *old, char *new);
 
 /*init.c*/
 void	init_table(t_table *table, int argc);
-void	init_philo(t_table *table);
+int		init_philo(t_table *table);
 int		init_mutex(t_table *table);
-void	init_thread(t_philo *philo);
-void	init_monitor_thread(t_table *table);
+int		init_thread(t_philo *philo);
+int		init_monitor_thread(t_table *table);
 
 /*routine.c*/
 int		take_fork_right_first(t_philo *philo);
@@ -93,7 +95,7 @@ void	all_philo_is_full(t_table *table);
 /*main.c*/
 long	get_time_in_ms(void);
 void	ft_usleep(long time_sleep, t_philo *philo);
-int		ret_error(int ret, char *s);
+int		ret_error(int ret, char *s, char *var);
 void	print_status(t_philo *philo, char *s);
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: muzz <muzz@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/19 15:29:10 by muzz              #+#    #+#             */
-/*   Updated: 2025/05/19 21:26:23 by muzz             ###   ########.fr       */
+/*   Created: 2025/05/19 15:29:10 by abin-moh          #+#    #+#             */
+/*   Updated: 2025/05/25 14:01:02 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,9 @@ void	*special_case(t_philo *philo)
 
 int	check_dead(t_table *table, int i)
 {
-	pthread_mutex_lock(table->philo[i].mutex_meal);
+	pthread_mutex_lock(&table->philo[i].mutex_meal);
 	if ((get_time_in_ms() - table->philo[i].last_meal_time)
-		> table->time_to_die)
+		>= table->time_to_die)
 	{
 		pthread_mutex_lock(&table->mutex_dead);
 		table->dead = 1;
@@ -44,10 +44,10 @@ int	check_dead(t_table *table, int i)
 		printf("%ld ", get_time_in_ms() - table->time_start);
 		printf("%d died\n", table->philo[i].id);
 		pthread_mutex_unlock(&table->mutex_write);
-		pthread_mutex_unlock(table->philo[i].mutex_meal);
+		pthread_mutex_unlock(&table->philo[i].mutex_meal);
 		return (-1);
 	}
-	pthread_mutex_unlock(table->philo[i].mutex_meal);
+	pthread_mutex_unlock(&table->philo[i].mutex_meal);
 	return (1);
 }
 
@@ -60,10 +60,10 @@ int	check_all_finished(t_table *table)
 	i = -1;
 	while (++i < table->num_philo)
 	{
-		pthread_mutex_lock(table->philo[i].mutex_meal);
+		pthread_mutex_lock(&table->philo[i].mutex_meal);
 		if (table->philo[i].meals_eaten >= table->num_need_eat)
 			finished_count++;
-		pthread_mutex_unlock(table->philo[i].mutex_meal);
+		pthread_mutex_unlock(&table->philo[i].mutex_meal);
 	}
 	return (finished_count);
 }

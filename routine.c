@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 15:18:45 by muzz              #+#    #+#             */
-/*   Updated: 2025/05/20 12:28:13 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/05/25 15:29:24 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	take_fork_right_first(t_philo *philo)
 	take_fork(philo, "right");
 	if (is_dead(philo))
 	{
-		pthread_mutex_unlock(philo->l_fork);
+		pthread_mutex_unlock(philo->r_fork);
 		return (-1);
 	}
 	take_fork(philo, "left");
@@ -85,7 +85,7 @@ void	*monitor_routine(void *arg)
 				return (NULL);
 			}
 		}
-		usleep(100);
+		usleep(1000);
 	}
 	return (NULL);
 }
