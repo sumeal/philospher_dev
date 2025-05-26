@@ -51,6 +51,7 @@ typedef struct s_philo
 	pthread_mutex_t	*mutex_write;
 	int				*dead;
 	pthread_mutex_t	*mutex_dead;
+	pthread_mutex_t	go;
 	t_table			*table;
 }	t_philo;
 

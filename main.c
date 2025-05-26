@@ -24,12 +24,11 @@ void	ft_usleep(long time_sleep, t_philo *philo)
 {
 	long	start;
 
+	(void)philo;
 	start = get_time_in_ms();
 	while (((get_time_in_ms() - start) < time_sleep))
 	{
-		if (is_dead(philo))
-			break ;
-		usleep(100);
+		usleep(1000);
 	}
 }
 
@@ -42,17 +41,15 @@ int	ret_error(int ret, char *s, char *var)
 	return (ret);
 }
 
-void	print_status(t_philo *philo, char *s)
+void print_status(t_philo *philo, char *status)
 {
-	long	now;
+    long now;
 
-	pthread_mutex_lock(philo->mutex_dead);
-	pthread_mutex_lock(philo->mutex_write);
-	now = get_time_in_ms() - philo->table->time_start;
-	if (!(*philo->dead))
-		printf("%ld %d %s\n", now, philo->id, s);
-	pthread_mutex_unlock(philo->mutex_write);
-	pthread_mutex_unlock(philo->mutex_dead);
+    now = get_time_in_ms() - philo->table->time_start;
+    pthread_mutex_lock(philo->mutex_write);
+    if (!(*philo->dead))
+        printf("%ld %d %s\n", now, philo->id, status);
+    pthread_mutex_unlock(philo->mutex_write);
 }
 
 int	ret_and_free(int ret, t_table *table)

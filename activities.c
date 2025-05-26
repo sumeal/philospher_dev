@@ -14,7 +14,7 @@
 
 void	take_fork(t_philo *philo, char *s)
 {
-	if (ft_strcmp(s, "left"))
+	if (ft_strcmp(s, "left") == 0)
 	{
 		pthread_mutex_lock(philo->l_fork);
 		print_status(philo, "has taken a fork");
@@ -31,8 +31,8 @@ void	eating(t_philo *philo)
 	pthread_mutex_lock(&philo->mutex_meal);
 	philo->meals_eaten++;
 	philo->last_meal_time = get_time_in_ms();
-	print_status(philo, "is eating");
 	pthread_mutex_unlock(&philo->mutex_meal);
+	print_status(philo, "is eating");
 	ft_usleep(philo->table->time_eat, philo);
 }
 

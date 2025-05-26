@@ -12,56 +12,40 @@
 
 #include "philo.h"
 
-int	take_fork_right_first(t_philo *philo)
-{
-	take_fork(philo, "right");
-	if (is_dead(philo))
-	{
-		pthread_mutex_unlock(philo->r_fork);
-		return (-1);
-	}
-	take_fork(philo, "left");
-	return (0);
-}
-
-int	take_fork_left_first(t_philo *philo)
-{
-	take_fork(philo, "left");
-	if (is_dead(philo))
-	{
-		pthread_mutex_unlock(philo->l_fork);
-		return (-1);
-	}
-	take_fork(philo, "right");
-	return (0);
-}
-
 void	*routine(void *arg)
 {
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
+	pthread_mutex_lock(&philo->go);
 	if (philo->table->num_philo == 1)
 		return (special_case(philo));
 	while (!is_dead(philo))
 	{
+		if (philo->id % 2 == 0)
+    		usleep(1000);
 		print_status(philo, "is thinking");
 		if (is_dead(philo))
 			break ;
-		if (philo->id % 2 == 0)
+		if (philo->l_fork < philo->r_fork)
 		{
-			if (take_fork_left_first(philo) < 0)
-				break ;
+			pthread_mutex_lock(philo->l_fork);
+			print_status(philo, "has taken a fork");
+			pthread_mutex_lock(philo->r_fork);
+			print_status(philo, "has taken a fork");
 		}
 		else
 		{
-			if (take_fork_right_first(philo) < 0)
-				break ;
+			pthread_mutex_lock(philo->r_fork);
+			print_status(philo, "has taken a fork");
+			pthread_mutex_lock(philo->l_fork);
+			print_status(philo, "has taken a fork");
 		}
 		eating(philo);
 		unlock_both_forks(philo);
 		sleeping(philo);
 	}
+	pthread_mutex_unlock(&philo->go);
 	return (NULL);
 }
 
