@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 15:07:26 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/25 14:14:09 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/05/28 15:37:20 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ int	init_philo(t_table *table)
 {
 	int	i;
 
-	table->dead = 0;
 	table->philo = malloc(sizeof(t_philo) * table->num_philo);
 	if (!table->philo)
 		return (-1);
@@ -102,8 +101,22 @@ int	init_thread(t_philo *philo)
 	i = -1;
 	while (++i < philo->table->num_philo)
 	{
-		philo[i].last_meal_time = get_time_in_ms();
-		pthread_mutex_unlock(&philo[i].go);
+		if (i % 2 == 0)
+		{
+			philo[i].last_meal_time = get_time_in_ms();
+			pthread_mutex_unlock(&philo[i].go);
+		}
+		
+	}
+	i = -1;
+	while (++i < philo->table->num_philo)
+	{
+		if (i % 2 != 0)
+		{
+			philo[i].last_meal_time = get_time_in_ms();
+			pthread_mutex_unlock(&philo[i].go);
+		}
+		
 	}
 	return (0);
 }

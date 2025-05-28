@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:07:06 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/25 13:58:02 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/05/28 09:36:22 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,8 @@ void	eating(t_philo *philo);
 void	sleeping(t_philo *philo);
 void	unlock_both_forks(t_philo *philo);
 void	free_thread(t_table *table);
+void	thinking(t_philo *philo);
+
 
 /*utils.c*/
 int		is_dead(t_philo *philo);
@@ -97,6 +99,6 @@ void	all_philo_is_full(t_table *table);
 long	get_time_in_ms(void);
 void	ft_usleep(long time_sleep, t_philo *philo);
 int		ret_error(int ret, char *s, char *var);
-void	print_status(t_philo *philo, char *s);
+void	print_status(t_philo *philo, char *s, int time);
 
 #endif

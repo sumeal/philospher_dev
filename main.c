@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:06:46 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/25 14:54:44 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/05/28 11:18:58 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	ft_usleep(long time_sleep, t_philo *philo)
 	start = get_time_in_ms();
 	while (((get_time_in_ms() - start) < time_sleep))
 	{
-		usleep(1000);
+		usleep(100);
 	}
 }
 
@@ -41,15 +41,17 @@ int	ret_error(int ret, char *s, char *var)
 	return (ret);
 }
 
-void print_status(t_philo *philo, char *status)
+void print_status(t_philo *philo, char *status, int time)
 {
     long now;
-
-    now = get_time_in_ms() - philo->table->time_start;
-    pthread_mutex_lock(philo->mutex_write);
-    if (!(*philo->dead))
-        printf("%ld %d %s\n", now, philo->id, status);
-    pthread_mutex_unlock(philo->mutex_write);
+	
+	now = get_time_in_ms() - philo->table->time_start;
+	pthread_mutex_lock(philo->mutex_write);
+    if (time)
+		now = time;
+    if (!is_dead(philo))	
+		printf("%ld %d %s\n", now, philo->id, status);
+	pthread_mutex_unlock(philo->mutex_write);
 }
 
 int	ret_and_free(int ret, t_table *table)
