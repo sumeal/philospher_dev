@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 15:29:10 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/28 12:34:29 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/05/29 14:16:15 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,7 @@ void	*special_case(t_philo *philo)
 	print_status(philo, "is thinking", 0);
 	pthread_mutex_lock(philo->l_fork);
 	print_status(philo, "has taken a fork", 0);
-	ft_usleep(philo->table->time_to_die * 1000, philo);
-	print_status(philo, "died", 0);
+	ft_usleep(philo->table->time_to_die, philo);
 	pthread_mutex_unlock(philo->l_fork);
 	return (NULL);
 }
@@ -73,6 +72,7 @@ int	check_all_finished(t_table *table)
 void	all_philo_is_full(t_table *table)
 {
 	pthread_mutex_lock(&table->mutex_dead);
+	printf("All philo has eat at least %ld\n", table->num_need_eat);
 	table->dead = 1;
 	pthread_mutex_unlock(&table->mutex_dead);
 }

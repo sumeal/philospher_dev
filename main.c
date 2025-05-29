@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:06:46 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/28 11:18:58 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/05/29 16:28:07 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,20 @@ long	get_time_in_ms(void)
 void	ft_usleep(long time_sleep, t_philo *philo)
 {
 	long	start;
+	long	now;
 
-	(void)philo;
 	start = get_time_in_ms();
-	while (((get_time_in_ms() - start) < time_sleep))
+	while (1)
 	{
-		usleep(100);
+		now = get_time_in_ms();
+		if ((now - start) >= time_sleep)
+			break;
+		if (is_dead(philo))
+			break;
+		usleep(500);
 	}
 }
+
 
 int	ret_error(int ret, char *s, char *var)
 {
@@ -44,9 +50,9 @@ int	ret_error(int ret, char *s, char *var)
 void print_status(t_philo *philo, char *status, int time)
 {
     long now;
-	
-	now = get_time_in_ms() - philo->table->time_start;
+
 	pthread_mutex_lock(philo->mutex_write);
+	now = get_time_in_ms() - philo->table->time_start;
     if (time)
 		now = time;
     if (!is_dead(philo))	
@@ -76,6 +82,10 @@ int	main(int argc, char **argv)
 		if (init_thread(table.philo) < 0)
 			return(ret_and_free(1, &table));
 		if (init_monitor_thread(&table) < 0)
+		{
+			wait_thread(table.philo);
+			return(ret_and_free(1, &table));
+		}
 		wait_thread(table.philo);
 		free_thread(&table);
 	}

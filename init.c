@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 15:07:26 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/28 15:37:20 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/05/29 19:44:01 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,11 @@ int	init_philo(t_table *table)
 		table->philo[i].id = i + 1;
 		table->philo[i].l_fork = &table->forks[i];
 		table->philo[i].r_fork = &table->forks[(i + 1) % table->num_philo];
+		if (i % 2)
+		{
+			table->philo[i].r_fork = &table->forks[i];
+			table->philo[i].l_fork = &table->forks[(i + 1) % table->num_philo];
+		}
 		table->philo[i].mutex_write = &table->mutex_write;
 		table->philo[i].dead = &table->dead;
 		table->philo[i].mutex_dead = &table->mutex_dead;
@@ -85,38 +90,12 @@ int	init_thread(t_philo *philo)
 {
 	int	i;
 
-	i = -1;
-	while (++i < philo->table->num_philo)
-	{
-		pthread_mutex_init(&philo[i].go, NULL);
-		pthread_mutex_lock(&philo[i].go);
-	}
+	philo->table->time_start = get_time_in_ms() + (philo->table->num_philo * 10);
 	i = -1;
 	while (++i < philo->table->num_philo)
 	{
 		if (pthread_create(&philo[i].thread, NULL, routine, &philo[i]) != 0)
 			return (-1);
-	}
-	philo->table->time_start = get_time_in_ms();
-	i = -1;
-	while (++i < philo->table->num_philo)
-	{
-		if (i % 2 == 0)
-		{
-			philo[i].last_meal_time = get_time_in_ms();
-			pthread_mutex_unlock(&philo[i].go);
-		}
-		
-	}
-	i = -1;
-	while (++i < philo->table->num_philo)
-	{
-		if (i % 2 != 0)
-		{
-			philo[i].last_meal_time = get_time_in_ms();
-			pthread_mutex_unlock(&philo[i].go);
-		}
-		
 	}
 	return (0);
 }

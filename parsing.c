@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 15:22:11 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/25 13:59:13 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/05/29 15:04:45 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,5 +40,6 @@ int	put_value_to_table(t_table *table, long *num)
 	if (table->num_need_eat >= 0)
 		table->num_need_eat = num[4];
 	table->dead = 0;
+	
 	return (0);
 }
