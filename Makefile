@@ -6,6 +6,7 @@ CFLAGS = -Wall -Wextra -Werror
 
 FILES = main.c \
 		activities.c \
+		free.c \
 		init.c \
 		libft.c \
 		parsing.c \

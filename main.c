@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:06:46 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/29 16:28:07 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/05/30 14:23:00 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,12 @@ void	ft_usleep(long time_sleep, t_philo *philo)
 	{
 		now = get_time_in_ms();
 		if ((now - start) >= time_sleep)
-			break;
+			break ;
 		if (is_dead(philo))
-			break;
+			break ;
 		usleep(500);
 	}
 }
-
 
 int	ret_error(int ret, char *s, char *var)
 {
@@ -47,23 +46,17 @@ int	ret_error(int ret, char *s, char *var)
 	return (ret);
 }
 
-void print_status(t_philo *philo, char *status, int time)
+void	print_status(t_philo *philo, char *status, int time)
 {
-    long now;
+	long	now;
 
 	pthread_mutex_lock(philo->mutex_write);
 	now = get_time_in_ms() - philo->table->time_start;
-    if (time)
+	if (time)
 		now = time;
-    if (!is_dead(philo))	
+	if (!is_dead(philo))
 		printf("%ld %d %s\n", now, philo->id, status);
 	pthread_mutex_unlock(philo->mutex_write);
-}
-
-int	ret_and_free(int ret, t_table *table)
-{
-	free_thread(table);
-	return (ret);
 }
 
 int	main(int argc, char **argv)
@@ -76,22 +69,20 @@ int	main(int argc, char **argv)
 		if (parsing_input(argc, argv, &table) < 0)
 			return (1);
 		if (init_philo(&table) < 0)
-			return(ret_and_free(1, &table));
+			return (ret_and_free(1, &table));
 		if (init_mutex(&table) < 0)
-			return(ret_and_free(1, &table));
+			return (ret_and_free(1, &table));
 		if (init_thread(table.philo) < 0)
-			return(ret_and_free(1, &table));
+			return (ret_and_free(1, &table));
 		if (init_monitor_thread(&table) < 0)
 		{
 			wait_thread(table.philo);
-			return(ret_and_free(1, &table));
+			return (ret_and_free(1, &table));
 		}
 		wait_thread(table.philo);
 		free_thread(&table);
 	}
 	else
-	{
 		printf("Error: Wrong format\n");
-	}
 	return (0);
 }

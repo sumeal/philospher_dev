@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 15:29:10 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/29 14:16:15 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/05/30 15:49:47 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,9 @@ int	check_all_finished(t_table *table)
 void	all_philo_is_full(t_table *table)
 {
 	pthread_mutex_lock(&table->mutex_dead);
-	printf("All philo has eat at least %ld\n", table->num_need_eat);
+	pthread_mutex_lock(&table->mutex_write);
+	printf("All philo has eat at least %ld times\n", table->num_need_eat);
+	pthread_mutex_unlock(&table->mutex_write);
 	table->dead = 1;
 	pthread_mutex_unlock(&table->mutex_dead);
 }

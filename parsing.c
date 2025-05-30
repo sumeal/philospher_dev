@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 15:22:11 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/29 15:04:45 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/05/30 15:18:49 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,19 @@ int	put_value_to_table(t_table *table, long *num)
 	if (table->num_need_eat >= 0)
 		table->num_need_eat = num[4];
 	table->dead = 0;
-	
+	table->mutex_dead_init = 0;
+	table->mutex_write_init = 0;
 	return (0);
+}
+
+void	init_table(t_table *table, int argc)
+{
+	table->num_philo = 0;
+	table->time_to_die = 0;
+	table->time_eat = 0;
+	table->time_sleep = 0;
+	if (argc == 6)
+		table->num_need_eat = 0;
+	else
+		table->num_need_eat = -1;
 }

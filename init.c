@@ -6,29 +6,30 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 15:07:26 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/29 19:44:01 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/05/30 16:07:08 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	init_table(t_table *table, int argc)
-{
-	table->num_philo = 0;
-	table->time_to_die = 0;
-	table->time_eat = 0;
-	table->time_sleep = 0;
-	if (argc == 6)
-		table->num_need_eat = 0;
-	else
-		table->num_need_eat = -1;
-}
-
 int	init_fork_mutex(t_table *table)
 {
+	int	i;
+
+	i = -1;
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->num_philo);
 	if (!table->forks)
 		return (-1);
+	while (++i < table->num_philo) 
+	{
+		table->philo[i].l_fork = &table->forks[i];
+		table->philo[i].r_fork = &table->forks[(i + 1) % table->num_philo];
+		// if (i % 2 == 0)
+		// {
+		// 	table->philo[i].r_fork = &table->forks[i];
+		// 	table->philo[i].l_fork = &table->forks[(i + 1) % table->num_philo];
+		// }
+	}
 	return (0);
 }
 
@@ -45,13 +46,6 @@ int	init_philo(t_table *table)
 	while (++i < table->num_philo)
 	{
 		table->philo[i].id = i + 1;
-		table->philo[i].l_fork = &table->forks[i];
-		table->philo[i].r_fork = &table->forks[(i + 1) % table->num_philo];
-		if (i % 2)
-		{
-			table->philo[i].r_fork = &table->forks[i];
-			table->philo[i].l_fork = &table->forks[(i + 1) % table->num_philo];
-		}
 		table->philo[i].mutex_write = &table->mutex_write;
 		table->philo[i].dead = &table->dead;
 		table->philo[i].mutex_dead = &table->mutex_dead;
@@ -65,16 +59,14 @@ int	init_philo(t_table *table)
 int	init_mutex(t_table *table)
 {
 	int	i;
-	
+
 	i = -1;
 	while (++i < table->num_philo)
 	{
 		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
-			return(ret_error(-1, "Error: failed init mutex fork\n", NULL));
+			return (ret_error(-1, "Error: failed init mutex fork\n", NULL));
 		if (pthread_mutex_init(&table->philo[i].mutex_meal, NULL) != 0)
-			return(ret_error(-1, "Error: failed init mutex meal\n", NULL));
-		if (pthread_mutex_init(&table->philo[i].go, NULL) != 0)
-			return(ret_error(-1, "Error: failed init mutex go\n", NULL));		
+			return (ret_error(-1, "Error: failed init mutex meal\n", NULL));
 		table->philo[i].mutex_meal_init = 1;
 	}
 	if (pthread_mutex_init(&table->mutex_write, NULL) != 0)
@@ -90,7 +82,7 @@ int	init_thread(t_philo *philo)
 {
 	int	i;
 
-	philo->table->time_start = get_time_in_ms() + (philo->table->num_philo * 10);
+	philo->table->time_start = get_time_in_ms() + 20;
 	i = -1;
 	while (++i < philo->table->num_philo)
 	{
