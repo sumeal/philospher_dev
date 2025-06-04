@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:07:06 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/30 14:43:48 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/06/04 09:06:13 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ typedef struct s_philo
 	pthread_mutex_t	*mutex_write;
 	int				*dead;
 	pthread_mutex_t	*mutex_dead;
-	pthread_mutex_t	go;
 	t_table			*table;
 }	t_philo;
 

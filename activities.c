@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 15:25:35 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/30 16:11:34 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/06/04 08:51:05 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,15 @@
 
 void	eating(t_philo *philo)
 {
-	if (philo->l_fork < philo->r_fork)
+	pthread_mutex_lock(philo->l_fork);
+	print_status(philo, "has taken a fork", 0);
+	if (is_dead(philo))
 	{
-    	pthread_mutex_lock(philo->l_fork);
-    	pthread_mutex_lock(philo->r_fork);
+		pthread_mutex_unlock(philo->l_fork);
+		return ;
 	}
-	else
-	{
-    	pthread_mutex_lock(philo->r_fork);
-    	pthread_mutex_lock(philo->l_fork);
-	}
-	// pthread_mutex_lock(philo->l_fork);
-	// print_status(philo, "has taken a fork", 0);
-	// if (is_dead(philo))
-	// {
-	// 	pthread_mutex_unlock(philo->l_fork);
-	// 	return ;
-	// }
-	// pthread_mutex_lock(philo->r_fork);
-	// print_status(philo, "has taken a fork", 0);
+	pthread_mutex_lock(philo->r_fork);
+	print_status(philo, "has taken a fork", 0);
 	pthread_mutex_lock(&philo->mutex_meal);
 	philo->last_meal_time = get_time_in_ms();
 	pthread_mutex_unlock(&philo->mutex_meal);
@@ -52,16 +42,8 @@ void	sleeping(t_philo *philo)
 
 void	unlock_both_forks(t_philo *philo)
 {
-    if (philo->l_fork < philo->r_fork)
-    {
-        pthread_mutex_unlock(philo->r_fork);
-        pthread_mutex_unlock(philo->l_fork);
-    }
-    else
-    {
-        pthread_mutex_unlock(philo->l_fork);
-        pthread_mutex_unlock(philo->r_fork);
-    }
+	pthread_mutex_unlock(philo->l_fork);
+	pthread_mutex_unlock(philo->r_fork);
 }
 
 void	thinking(t_philo *philo)

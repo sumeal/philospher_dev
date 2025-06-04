@@ -6,7 +6,7 @@
 /*   By: abin-moh <abin-moh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 15:07:26 by abin-moh          #+#    #+#             */
-/*   Updated: 2025/05/30 16:07:08 by abin-moh         ###   ########.fr       */
+/*   Updated: 2025/06/04 08:51:24 by abin-moh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,15 @@ int	init_fork_mutex(t_table *table)
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->num_philo);
 	if (!table->forks)
 		return (-1);
-	while (++i < table->num_philo) 
+	while (++i < table->num_philo)
 	{
 		table->philo[i].l_fork = &table->forks[i];
 		table->philo[i].r_fork = &table->forks[(i + 1) % table->num_philo];
-		// if (i % 2 == 0)
-		// {
-		// 	table->philo[i].r_fork = &table->forks[i];
-		// 	table->philo[i].l_fork = &table->forks[(i + 1) % table->num_philo];
-		// }
+		if (i % 2 == 0)
+		{
+			table->philo[i].r_fork = &table->forks[i];
+			table->philo[i].l_fork = &table->forks[(i + 1) % table->num_philo];
+		}
 	}
 	return (0);
 }
